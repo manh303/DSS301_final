@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  analyzer:
+    build: .
+    container_name: analyzer
+    volumes:
+      - ./data:/data
+      - ./output:/app/output
+    command: python app/main.py
+
+  dashboard:
+    build: .
+    container_name: dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/data
+    command: streamlit run app/dashboard.py --server.headless true
+
+  report:
+    build: .
+    container_name: reportgen
+    volumes:
+      - ./data:/data
+      - ./output:/app/output
+    command: python app/report.py

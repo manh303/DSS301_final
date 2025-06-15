@@ -1,0 +1,6 @@
+pandas
+matplotlib
+seaborn
+fpdf
+streamlit
+plotly
