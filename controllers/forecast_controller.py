@@ -25,45 +25,30 @@ def generate_suggestions(forecast_result):
         # Dựa trên % thay đổi, đưa ra hành động và gợi ý chi tiết
         if pct >= 10:
             trend = "📈 Tăng rất mạnh"
-            action = "Mở rộng sản xuất và tăng cường cung cấp sản phẩm.
-Đẩy mạnh các chiến dịch quảng bá và bán hàng."
-            detail = "Tăng cường quảng bá sản phẩm và mở rộng chiến dịch marketing.
-Xem xét hợp tác với các KOL/KOC để mở rộng thị trường."
+            action = "Mở rộng sản xuất và tăng cường cung cấp sản phẩm.\nĐẩy mạnh các chiến dịch quảng bá và bán hàng."
+            detail = "Tăng cường quảng bá sản phẩm và mở rộng chiến dịch marketing.\nXem xét hợp tác với các KOL/KOC để mở rộng thị trường."
         elif 5 <= pct < 10:
             trend = "🟢 Tăng mạnh"
-            action = "Tiếp tục duy trì chiến lược marketing hiện tại.
-Xem xét mở rộng sản xuất và tăng cường cung cấp sản phẩm."
-            detail = "Tiếp tục duy trì các chiến lược marketing đang hoạt động hiệu quả.
-Khám phá các thị trường mới và đầu tư vào cải tiến sản phẩm."
+            action = "Tiếp tục duy trì chiến lược marketing hiện tại.\nXem xét mở rộng sản xuất và tăng cường cung cấp sản phẩm."
+            detail = "Tiếp tục duy trì các chiến lược marketing đang hoạt động hiệu quả.\nKhám phá các thị trường mới và đầu tư vào cải tiến sản phẩm."
         elif 0 <= pct < 5:
             trend = "➖ Tăng nhẹ"
-            action = "Duy trì chiến lược marketing hiện tại.
-Tăng cường quảng bá sản phẩm và khuyến mãi."
-            detail = "Xem xét các kênh quảng cáo hiệu quả hơn (ví dụ: TikTok, Facebook, Instagram).
-Tăng cường hợp tác với các KOL/KOC."
+            action = "Duy trì chiến lược marketing hiện tại.\nTăng cường quảng bá sản phẩm và khuyến mãi."
+            detail = "Xem xét các kênh quảng cáo hiệu quả hơn (ví dụ: TikTok, Facebook, Instagram).\nTăng cường hợp tác với các KOL/KOC."
         elif -5 < pct < 0:
             trend = "🔵 Giảm nhẹ"
-            action = "Cải thiện chiến lược marketing để duy trì ổn định.
-Xem xét các chiến lược khuyến mãi."
-            detail = "Điều chỉnh mức giá sản phẩm để cải thiện lợi nhuận.
-Tập trung vào nâng cao trải nghiệm khách hàng."
+            action = "Cải thiện chiến lược marketing để duy trì ổn định.\nXem xét các chiến lược khuyến mãi."
+            detail = "Điều chỉnh mức giá sản phẩm để cải thiện lợi nhuận.\nTập trung vào nâng cao trải nghiệm khách hàng."
         elif -10 < pct <= -5:
             trend = "📉 Giảm mạnh"
-            action = "Cần thay đổi chiến lược marketing hoàn toàn để thu hút khách hàng mới.
-Tăng cường các chương trình khuyến mãi mạnh mẽ."
-            detail = "Tổ chức các sự kiện bán hàng đặc biệt hoặc flash sale.
-Tăng cường chiến dịch quảng cáo trực tuyến và giảm giá mạnh."
+            action = "Cần thay đổi chiến lược marketing hoàn toàn để thu hút khách hàng mới.\nTăng cường các chương trình khuyến mãi mạnh mẽ."
+            detail = "Tổ chức các sự kiện bán hàng đặc biệt hoặc flash sale.\nTăng cường chiến dịch quảng cáo trực tuyến và giảm giá mạnh."
         else:
             trend = "🚨 Giảm rất mạnh"
-            action = "Điều chỉnh ngay lập tức chiến lược marketing.
-Giảm giá mạnh và thanh lý hàng tồn kho."
-            detail = "Cân nhắc giảm giá 10–20% hoặc thanh lý hàng tồn kho.
-Tổ chức chiến dịch quảng cáo mạnh mẽ hơn và tăng ngân sách truyền thông."
+            action = "Điều chỉnh ngay lập tức chiến lược marketing.\nGiảm giá mạnh và thanh lý hàng tồn kho."
+            detail = "Cân nhắc giảm giá 10–20% hoặc thanh lý hàng tồn kho.\nTổ chức chiến dịch quảng cáo mạnh mẽ hơn và tăng ngân sách truyền thông."
 
-        suggestions.append(f"**{month_label}** - Xu hướng: {trend}
-- Đề xuất: {action}
-- Gợi ý chi tiết: {detail}
-")
+        suggestions.append(f"**{month_label}** - Xu hướng: {trend} - Đề xuất: {action} - Gợi ý chi tiết: {detail}")
 
     return suggestions
 
