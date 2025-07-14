@@ -7,6 +7,84 @@ import datetime
 class RFMModel:
     """Model xử lý dữ liệu RFM và phân cụm khách hàng"""
     
+    def load_data_from_path(self, file_path, country, ref_date=None):
+        """
+        Tải và tiền xử lý dữ liệu từ đường dẫn file CSV
+        
+        Parameters:
+        -----------
+        file_path : str
+            Đường dẫn đến file CSV chứa dữ liệu giao dịch
+        country : str
+            Quốc gia để lọc dữ liệu, "Tất cả" để không lọc
+        ref_date : datetime
+            Ngày tham chiếu để lọc dữ liệu (chỉ lấy từ ngày này trở đi)
+            
+        Returns:
+        --------
+        tuple: (DataFrame, datetime)
+            - DataFrame: Dữ liệu đã được xử lý
+            - datetime: Ngày cuối cùng trong dữ liệu
+        """
+        df = pd.read_csv(file_path, encoding='ISO-8859-1')
+        
+        # Đảm bảo CustomerID là kiểu số
+        if 'CustomerID' in df.columns:
+            # Chuyển đổi CustomerID thành float nếu có thể, bỏ qua các giá trị không thể chuyển đổi
+            df['CustomerID'] = pd.to_numeric(df['CustomerID'], errors='coerce')
+            # Loại bỏ các dòng không có CustomerID
+            df = df.dropna(subset=['CustomerID'])
+            # Chuyển CustomerID thành kiểu int để đảm bảo tính nhất quán
+            df['CustomerID'] = df['CustomerID'].astype(int)
+        else:
+            raise ValueError("File CSV không có cột CustomerID")
+            
+        # Đảm bảo các cột số lượng và giá là kiểu số
+        if 'Quantity' in df.columns and 'UnitPrice' in df.columns:
+            df['Quantity'] = pd.to_numeric(df['Quantity'], errors='coerce')
+            df['UnitPrice'] = pd.to_numeric(df['UnitPrice'], errors='coerce')
+        else:
+            raise ValueError("File CSV không có cột Quantity hoặc UnitPrice")
+        
+        # Loại bỏ các hóa đơn hủy (bắt đầu bằng 'C')
+        if 'InvoiceNo' in df.columns:
+            df['InvoiceNo'] = df['InvoiceNo'].astype(str)
+            df = df[~df['InvoiceNo'].str.startswith('C')]
+        else:
+            raise ValueError("File CSV không có cột InvoiceNo")
+        
+        # Chỉ giữ lại các giao dịch có số lượng và giá dương
+        df = df[(df['Quantity'] > 0) & (df['UnitPrice'] > 0)]
+        
+        # Chuyển đổi cột ngày thành datetime
+        if 'InvoiceDate' in df.columns:
+            df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'], errors='coerce')
+            # Loại bỏ các dòng có ngày không hợp lệ
+            df = df.dropna(subset=['InvoiceDate'])
+        else:
+            raise ValueError("File CSV không có cột InvoiceDate")
+            
+        # Lấy ngày cuối cùng từ dữ liệu
+        latest_date = df['InvoiceDate'].max()
+        
+        # Lọc dữ liệu từ ngày tham chiếu đến ngày cuối cùng nếu có ngày tham chiếu
+        if ref_date is not None:
+            # Chuyển đổi ref_date thành datetime nếu là string hoặc date
+            if isinstance(ref_date, (str, datetime.date)):
+                ref_date = pd.to_datetime(ref_date)
+                
+            # Lọc dữ liệu từ ngày tham chiếu
+            df = df[df['InvoiceDate'] >= ref_date]
+        
+        # Lọc theo quốc gia nếu được chỉ định
+        if country != "Tất cả" and 'Country' in df.columns:
+            df = df[df['Country'] == country]
+            
+        # Thêm cột doanh thu (Quantity * UnitPrice)
+        df['Revenue'] = df['Quantity'] * df['UnitPrice']
+            
+        return df, latest_date
+        
     def load_data(self, file, country, ref_date=None):
         """
         Tải và tiền xử lý dữ liệu từ file CSV
@@ -397,3 +475,4 @@ class RFMModel:
             
         except Exception as e:
             raise ValueError(f"Lỗi khi tính toán doanh thu theo tháng: {str(e)}")
+
