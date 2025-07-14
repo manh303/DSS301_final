@@ -4,8 +4,21 @@ import streamlit.components.v1 as components
 from controllers.main_controller import MainController
 from views.price_quantity_view import render_price_quantity_analysis
 from views.warehouse_view import render_warehouse_analysis
-from views.causal_impact_view import app as causal_impact_app
-from views.product_forecast_view import render_product_forecast_analysis
+
+# Global flags for optional module availability
+CAUSALIMPACT_AVAILABLE = True
+PROPHET_AVAILABLE = True
+
+try:
+    from views.causal_impact_view import app as causal_impact_app
+except ImportError:
+    CAUSALIMPACT_AVAILABLE = False
+    
+try:
+    from views.product_forecast_view import render_product_forecast_analysis
+except ImportError:
+    PROPHET_AVAILABLE = False
+
 from models.rfm_model import RFMModel
 from models.data_model import get_cached_data
 
@@ -59,6 +72,8 @@ def home():
 
             with st.container():
                 st.markdown("<div class='model-card'><div class='model-title'>📉 Phân tích Tác động (Causal Impact)</div>", unsafe_allow_html=True)
+                if not CAUSALIMPACT_AVAILABLE:
+                    st.warning("⚠️ Module 'causalimpact' không được cài đặt. Vui lòng cài đặt để sử dụng tính năng này.")
                 if st.button("Bắt đầu", key="causal"):
                     st.session_state.modal_type = "causal_impact"
                 st.markdown("</div>", unsafe_allow_html=True)
@@ -78,6 +93,8 @@ def home():
 
             with st.container():
                 st.markdown("<div class='model-card'><div class='model-title'>📈 Dự báo Doanh thu Sản phẩm</div>", unsafe_allow_html=True)
+                if not PROPHET_AVAILABLE:
+                    st.warning("⚠️ Module 'prophet' không được cài đặt. Vui lòng cài đặt để sử dụng tính năng này.")
                 if st.button("Bắt đầu", key="product_forecast"):
                     st.session_state.modal_type = "product_forecast"
                 st.markdown("</div>", unsafe_allow_html=True)
@@ -98,9 +115,13 @@ def show_modal(modal_type, df):
     modal_func = {
         "price_quantity": render_price_quantity_analysis,
         "warehouse": render_warehouse_analysis,
-        "causal_impact": causal_impact_app,
-        "product_forecast": render_product_forecast_analysis
     }
+    
+    if CAUSALIMPACT_AVAILABLE:
+        modal_func["causal_impact"] = causal_impact_app
+        
+    if PROPHET_AVAILABLE:
+        modal_func["product_forecast"] = render_product_forecast_analysis
 
     components.html("""
         <style>
@@ -122,8 +143,13 @@ def show_modal(modal_type, df):
         if modal_type == "rfm":
             controller = MainController()
             controller.run()
-        else:
+        elif modal_type in modal_func:
             modal_func[modal_type](df)
+        else:
+            if modal_type == "causal_impact" and not CAUSALIMPACT_AVAILABLE:
+                st.error("⚠️ Module 'causalimpact' không được cài đặt. Vui lòng cài đặt bằng lệnh: pip install causalimpact")
+            elif modal_type == "product_forecast" and not PROPHET_AVAILABLE:
+                st.error("⚠️ Module 'prophet' không được cài đặt. Vui lòng cài đặt bằng lệnh: pip install prophet")
     except Exception as e:
         st.error(f"Đã xảy ra lỗi khi hiển thị mô hình '{modal_type}': {e}")
 

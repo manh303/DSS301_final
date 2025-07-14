@@ -1,7 +1,11 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from controllers.revenue_forecast_controller import RevenueForecastController
+try:
+    from controllers.revenue_forecast_controller import RevenueForecastController
+    from models.revenue_forecast_model import PROPHET_AVAILABLE
+except ImportError:
+    PROPHET_AVAILABLE = False
 
 class RevenueForecastView:
     def __init__(self, controller):
@@ -9,6 +13,11 @@ class RevenueForecastView:
 
     def display(self):
         st.title("🔮 Dự báo Doanh thu Sản phẩm theo Tháng")
+        
+        if not PROPHET_AVAILABLE:
+            st.error("⚠️ Module 'prophet' không được cài đặt. Vui lòng cài đặt bằng lệnh: pip install prophet")
+            st.info("Các chức năng khác vẫn hoạt động bình thường. Hãy thử các phân tích khác trong ứng dụng.")
+            return
 
         uploaded_file = st.file_uploader("📂 Chọn file CSV dữ liệu", type=["csv"])
         if uploaded_file:
@@ -81,5 +90,12 @@ class RevenueForecastView:
                     st.pyplot(fig)
 
 def render_product_forecast_analysis(df):
-    view = RevenueForecastView(None)
-    view.display()
+    try:
+        from models.revenue_forecast_model import PROPHET_AVAILABLE
+        if not PROPHET_AVAILABLE:
+            st.error("⚠️ Module 'prophet' không được cài đặt. Vui lòng cài đặt bằng lệnh: pip install prophet")
+            return
+        view = RevenueForecastView(None)
+        view.display()
+    except ImportError:
+        st.error("⚠️ Module 'prophet' không được cài đặt. Vui lòng cài đặt bằng lệnh: pip install prophet")

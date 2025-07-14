@@ -1,5 +1,9 @@
 import pandas as pd
-from prophet import Prophet
+try:
+    from prophet import Prophet
+    PROPHET_AVAILABLE = True
+except ImportError:
+    PROPHET_AVAILABLE = False
 
 class RevenueForecastModel:
     def __init__(self, df):
@@ -21,6 +25,9 @@ class RevenueForecastModel:
         self.df['Month'] = self.df['Date'].dt.to_period('M').dt.to_timestamp()
 
     def forecast(self, stock_code, country, periods):
+        if not PROPHET_AVAILABLE:
+            return None, None
+            
         # Lọc theo sản phẩm và quốc gia
         df_filtered = self.df[(self.df['StockCode'] == stock_code) & (self.df['Country'] == country)]
 
