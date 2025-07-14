@@ -27,3 +27,4 @@ def display_suggestions(suggestions):
     st.subheader("🔍 Phân tích & Gợi ý")
     for suggestion in suggestions:
         st.markdown(suggestion)
+st.markdown("💡 Duy trì theo dõi định kỳ và cập nhật mô hình hàng tháng để phản ánh biến động mới.")
