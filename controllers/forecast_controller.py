@@ -1,9 +1,8 @@
 
 import streamlit as st
 import pandas as pd
-from ..models.forecast_model import ForecastModel
-from views.forecast_view import display_sidebar, display_results, display_suggestions
-
+from ..models import forecast_model
+from views import forecast_view
 def load_data(uploaded_file):
     # Đọc dữ liệu CSV
     df = pd.read_csv(uploaded_file, encoding="ISO-8859-1")
@@ -82,11 +81,10 @@ def main():
             })
 
             # Hiển thị kết quả dự báo
-            display_results(forecast_result)
-
-            # Tạo và hiển thị gợi ý hành động
-            suggestions = generate_suggestions(forecast_result)
-            display_suggestions(suggestions)
+                forecast_view.show_forecast_result(forecast_result)
+                forecast_view.show_chart(forecast)
+                forecast_view.show_comments(comment)
+                forecast_view.show_suggestions(suggestions)
 
 if __name__ == "__main__":
     main()
