@@ -1,7 +1,7 @@
 
 import streamlit as st
 import pandas as pd
-from models.forecast_model import ForecastModel
+from ..models.forecast_model import ForecastModel
 from views.forecast_view import display_sidebar, display_results, display_suggestions
 
 def load_data(uploaded_file):
